@@ -6,8 +6,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 from sklearn.preprocessing import StandardScaler
-from keras.layers import Dense, Dropout, Conv2D, Flatten, MaxPool2D
-from keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, Conv2D, Flatten, MaxPool2D
+from tensorflow.keras.models import Sequential
 
 # Load the digits dataset
 digits = datasets.load_digits()
