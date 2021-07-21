@@ -6,6 +6,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 from sklearn.preprocessing import StandardScaler
+from tensorflow.keras.models import save_model, load_model
 from tensorflow.keras.layers import Dense, Dropout, Conv2D, Flatten, MaxPool2D
 from tensorflow.keras.models import Sequential
 
@@ -148,6 +149,11 @@ def dnn_model(hidden_size, drop_rate):
     return network
 
 
+k_size = (3, 3)  # kernel
+num_filter = 64  # convolutional filter num
+max_pool = (2, 2)  # max_pool size
+
+
 # DNN model, return a not trained model with input parameters
 def cnn_model(filter_num, kernel_size, max_pool_size, drop_rate):
     network = Sequential()
@@ -173,8 +179,8 @@ def train_dnn():
                   metrics=['acc'])
     model.fit(x_train, y_train, epochs=epoch, batch_size=batch)  # train
     model.predict(x_test)
-    with open('DNN_model.pickle', 'wb') as fw:
-        pickle.dump(model, fw)
+    # with open('DNN_model.pickle', 'wb') as fw:
+    # pickle.dump(model, fw)
 
 
 # The function to train and save a CNN model
@@ -185,8 +191,8 @@ def train_cnn():
                     loss='sparse_categorical_crossentropy',  # loss function
                     metrics=['acc'])
     network.fit(x_train_cnn, y_train, epochs=epoch, batch_size=batch)
-    with open('CNN_model.pickle', 'wb') as fw:
-        pickle.dump(network, fw)
+    # with open('CNN_model.pickle', 'wb') as fw:
+    # pickle.dump(network, fw)
 
 
 def f3_nn_cm():
