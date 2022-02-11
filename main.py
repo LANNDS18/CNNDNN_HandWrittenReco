@@ -6,7 +6,6 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 from sklearn.preprocessing import StandardScaler
-from tensorflow.keras.models import save_model, load_model
 from tensorflow.keras.layers import Dense, Dropout, Conv2D, Flatten, MaxPool2D
 from tensorflow.keras.models import Sequential
 
@@ -179,8 +178,8 @@ def train_dnn():
                   metrics=['acc'])
     model.fit(x_train, y_train, epochs=epoch, batch_size=batch)  # train
     model.predict(x_test)
-    # with open('DNN_model.pickle', 'wb') as fw:
-    # pickle.dump(model, fw)
+    with open('DNN_model.pickle', 'wb') as fw:
+        pickle.dump(model, fw)
 
 
 # The function to train and save a CNN model
@@ -191,8 +190,8 @@ def train_cnn():
                     loss='sparse_categorical_crossentropy',  # loss function
                     metrics=['acc'])
     network.fit(x_train_cnn, y_train, epochs=epoch, batch_size=batch)
-    # with open('CNN_model.pickle', 'wb') as fw:
-    # pickle.dump(network, fw)
+    with open('CNN_model.pickle', 'wb') as fw:
+        pickle.dump(network, fw)
 
 
 def f3_nn_cm():
@@ -216,15 +215,12 @@ def f3_nn_cm():
 
 def knn_confusion_matrix():
     # Draw knn confusion matrixdef knn_confusion_matrix():
-    with open('SKL_knn_classifier.pickle', 'rb') as sk:
-        scikit_knn = pickle.load(sk)
+    scikit_knn, own_knn = train_and_save_knn()
     y_skl = scikit_knn.predict(x_test)
     skl_cm = own_confusion_matrix(y_test, y_skl)
     print('Testing accuracy of Scikit-learn KNN model:', own_accu_score(y_test, y_skl))
     print('Confusion matrix of Scikit-learn KNN model: \n', skl_cm, '\n')
     draw_cm(skl_cm, 'Scikit-learn KNN model')
-    with open('Own_knn_classifier.pickle', 'rb') as sk:
-        own_knn = pickle.load(sk)
     y_oknn = own_knn.predict(x_test)
     own_cm = own_confusion_matrix(y_test, y_oknn)
     print('Testing accuracy of Own KNN model:', own_accu_score(y_test, y_oknn))
@@ -309,18 +305,13 @@ def train_and_save_knn():
     y_predict_skl = knn_classifier.predict_proba(x_test)
     y_predict_skl = convert_target(y_predict_skl)
     print('Learning accuracy:', own_accu_score(y_test, y_predict_skl))
-    # Save the model
-    with open('SKL_knn_classifier.pickle', 'wb') as fw:
-        pickle.dump(knn_classifier, fw)
     print('###Own Knn Classifier Model###')
     own_knn_classifier = OwnKnnClassifier(k)  # k=3
     own_knn_classifier.fit(x_train, y_train)
     y_predict_own = own_knn_classifier.predict(x_test)  # predict the digits using knn_classifier
     score2 = own_accu_score(y_test, y_predict_own)
     print('Learning accuracy:', score2)
-    # Save the model
-    with open('Own_knn_classifier.pickle', 'wb') as fw:
-        pickle.dump(own_knn_classifier, fw)
+    return knn_classifier, own_knn_classifier
 
 
 def cross_validation_skl_knn():
@@ -424,10 +415,7 @@ def roc_for_tow_nn_model():
 
 
 def roc_for_tow_knn():
-    with open('SKL_knn_classifier.pickle', 'rb') as sk:
-        scikit_knn = pickle.load(sk)
-    with open('Own_knn_classifier.pickle', 'rb') as own:
-        own_knn = pickle.load(own)
+    scikit_knn, own_knn = train_and_save_knn()
     ysk = scikit_knn.predict_proba(x_test)
     roc_curve(y_test, ysk, 'ROC Curve for skl-KNN_model')
     y_own = own_knn.proba(x_test)
